@@ -19,28 +19,10 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 10
 
 oauth_scheme = OAuth2PasswordBearer(tokenUrl="/users/token")
 
-
-@app.post("/cookie/")
-def create_cookie(access_token: Annotated[str, Depends(oauth_scheme)]):
-    content = {"Content-Language": "en-US", "Authorization": f"Bearer {access_token}"}
-    response = JSONResponse(content=content)
-    response.set_cookie(key="session", value=content)
-    return response
-
-
-@app.get("/headers/")
-def get_headers(access_token: Annotated[str, Depends(oauth_scheme)]):
-    headers = {"Content-Language": "en-US", "Authorization": f"Bearer {access_token}"}
-    session_header = JSONResponse(headers=headers)
-    return session_header
-
-
 @app.post("/register")
 def create_user(user: User, session: Session = Depends(SessionDep)):
     hashed_password = get_password_hash(user.hashed_password)
     user.hashed_password = hashed_password
-    # if hasattr(user, "hashed_password"):
-    #    delattr(user, "hashed_password")
     session.add(user)
     session.commit()
     session.refresh(user)

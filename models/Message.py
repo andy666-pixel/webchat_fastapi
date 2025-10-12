@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 from fastapi import APIRouter
 from sqlmodel import Field, SQLModel
 from fastapi import APIRouter
@@ -7,8 +8,8 @@ router = APIRouter()
 
 
 class Message(SQLModel, table=True):
-    id: int | None = Field(default=None, primary_key=True)
+    id: int | None = Field(primary_key=True)
     content: str
-    sender_id: int 
-    receiver_id: int 
-    timestamp: datetime
+    sender_name: str
+    timestamp: datetime = Field(default_factory=datetime.utcnow)
+    

@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Login • User</title>
   <style>
-    /* Aquí el CSS igual que antes, omitido por brevedad */
+    /* here is going to be the css that is going to implement chatgpt btw */
   </style>
 </head>
 <body>
@@ -45,7 +45,7 @@
       const password = document.getElementById("password").value;
 
       if (!username || !password) {
-        alert("Por favor ingresa usuario y contraseña");
+        alert("Porfa ingresa tu usuario y contraseña");
         return;
       }
 
@@ -54,7 +54,7 @@
       data.append("password", password);
 
       try {
-        // Paso 1: Obtener token
+        // Paso 1: Ora hacemos una request al endpoint del endpoint con los datos proporcionados en el formulario
         const tokenResponse = await fetch("/users/token", {
           method: "POST",
           headers: {
@@ -72,7 +72,7 @@
         const tokenResult = await tokenResponse.json();
         const accessToken = tokenResult.access_token;
 
-        // Paso 2: Usar token para obtener info del usuario
+        // Paso 2: Usar token ese mismo token para iniciar sesion con la instancia del usuario
         const userResponse = await fetch("/users/home/me", {
           method: "GET",
           headers: {
@@ -83,14 +83,15 @@
 
         if (!userResponse.ok) {
           const errorUser = await userResponse.json();
-          throw new Error(errorUser.detail || "Error al obtener datos del usuario");
+          throw new Error(errorUser.detail || "No pudimos obtener los datos del usuario");
         }
 
         const userData = await userResponse.json();
-
-        document.getElementById("result").textContent = "Login exitoso!\n\nUsuario:\n" + JSON.stringify(userData, null, 2);
-        
-        //window.location.href = "/users/home/me";
+         
+        document.getElementById("result").textContent = "Login exitoso!\n\nUsuario:\n" + JSON.stringify(userData, null, 2);    
+        localStorage.setItem("userdata",  JSON.stringify(userData));
+        localStorage.setItem("accestoken", accessToken)
+        window.location.href = "/static/frontend/chat/index.html";
 
       } catch (error) {
         console.error("Error en login:", error);

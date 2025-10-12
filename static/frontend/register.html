@@ -66,18 +66,14 @@
         is_online: document.getElementById('is_online').checked
       };
 
-      const res = await fetch('/users/register', {
+      const response = await fetch('/users/register', {
         method: 'POST',
         headers: {'Content-Type': 'application/json' },
         body: JSON.stringify(data)
       });
 
-      if (res.ok) {
-        alert('Usuario registrado con éxito');
-      } else {
-        const err = await res.text();
-        alert('Error en el registro: ' + err);
-      }
+      if (response.ok) {alert('Usuario registrado con éxito');} 
+      else {const error = await response.text(); alert('Error en el registro: ' + error);}
     });
   </script>
 </body>

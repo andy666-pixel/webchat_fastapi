@@ -1,92 +1,70 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Chat App</title>
-    <link href="style.css" rel="stylesheet" />
-    <script
-      src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js"
-      integrity="sha512-Xm9qbB6Pu06k3PUwPj785dyTl6oHxgsv9nHp7ej7nCpAqGZT3OZpsELuCYX05DdonFpTlBpXMOxjavIAIUwr0w=="
-      crossorigin="anonymous"
-      referrerpolicy="no-referrer"
-      ></script>
-<script>var client_id = Date.now()
-document.querySelector("#ws-id").textContent = client_id;
-var ws = new WebSocket(`ws://localhost:8000/ws/${client_id}`);
-ws.onmessage = function(event) {
-var messages = document.getElementById('messages')
-var message = document.createElement('li')
-var content = document.createTextNode(event.data)
-message.appendChild(content)
-messages.appendChild(message)
-};
-function sendMessage(event) {
-var input = document.getElementById("messageText")
-ws.send(input.value)
-input.value = ''
-event.preventDefault()}</script>
-  </head>
-
-  <body>
-    <main>
-      <!-- Join form -->
-      <section class="join-section">
-        <form class="form-join" aria-label="Join Chat">
-          <label for="name">Name</label>
-          <input
-            type="text"
-            id="name"
-            name="name"
-            maxlength="12"
-            placeholder="Your name"
-            required
-          />
-
-          <label for="room">Room</label>
-          <input
-            type="text"
-            id="room"
-            name="room"
-            placeholder="Chat room"
-            required
-          />
-
-          <button id="join" type="submit">Join</button>
-        </form>
-      </section>
-
-      <!-- Chat area -->
-      <section class="chat-section hidden" aria-label="Chat Room">
-        <header>
-          <h2 id="room-name">Room: <span></span></h2>
-        </header>
-
-        <ul class="chat-display" aria-live="polite"></ul>
-
-        <aside class="sidebar">
-          <h3>Users</h3>
-          <ul class="user-list"></ul>
-
-          <h3>Available Rooms</h3>
-          <ul class="room-list"></ul>
-        </aside>
-
-        <p class="activity" aria-live="polite"></p>
-
-        <form action="" onsubmit="sendMessage(event)"class="form-msg" aria-label="Send Message">
-          <input
-            type="text"
-            id="messageText"
-            name="message"
-            placeholder="Type a message..."
-            required
-            autocomplete="off"
-            class="form-msg"
-          />
-          <button type="submit">Send</button>
-        </form>
-      </section>
-    </main>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chat App</title>
+  <link href="style.css" rel="stylesheet"/>
+</head>
+<body>
+  <main>
+    <!-- Chat area -->
+    <section class="chat-section hidden">
+      <div id="Username"></div>
+      <ul id="messages"></ul>
+      <form id="form-msg">
+        <input type="text" id="messageText" placeholder="Type a message..." required />
+        <button type="submit">Send</button>
+      </form>
+    </section>
+  </main>
+<!-- //----------------------------------------Script for global chat-----------------------------------------------------------------// -->
+<script>
+  //---------------------------------------------------------------------------------------------------------//
+  // Primero recuperamos los datos del usuario de localstorage y su accesstoken
+  const accessToken = localStorage.getItem("accesstoken");
+  const userDataStr = localStorage.getItem("userdata");
+  //---------------------------------------------------------------------------------------------------------//
+  
+  let username = null;
+  
+  //---------------------------------------------------------------------------------------------------------//
+  // Estos if <if (example) {}> van a ser usados varias veces,
+  // significan que si (example) contiene algun valor/no es null entra en el bloque del if y hace lo que tenga que hacer ahi.
+  if (userDataStr) {  
+    const userdata = JSON.parse(userDataStr);
+    username = userdata.name;                               
+    document.getElementById("Username").textContent = username;
+    // Si la variable username no es null se inicia la conexion websocket
+    if (username) {
+      var ws = new WebSocket(`ws://localhost:8000/ws/${username}`);
+      ws.onmessage = function(event) {
+        var messages = document.getElementById('messages');
+        var message = document.createElement('li'); 
+        message.textContent = event.data;
+        messages.appendChild(message);
+      };
+  
+      document.getElementById("form-msg").addEventListener("submit", function(event){
+        event.preventDefault();
+        const content = document.getElementById("messageText").value;
+        const sender_name = document.getElementById("Username").textContent;     
+        const message_data = {
+          content: content,
+          sender_name: sender_name,
+        };
+        const message_data_json = JSON.stringify(message_data);
+        ws.send(message_data_json);
+        document.getElementById("messageText").value = '';
+      });
+    }
+  } else {
+    console.log("acceso no autorizado manin");
+    window.location.href = "unauthorized.html"; 
+  }
+  </script>
+  
+<!-- //----------------------------------------Script for global chat-----------------------------------------------------------------// -->
+ 
+</body>
 </html>

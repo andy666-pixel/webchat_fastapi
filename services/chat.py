@@ -5,8 +5,8 @@ from db.init_db import SessionDep
 from models.user import User
 from services.auth import get_current_user
 from typing import Annotated
-from models.message import Message
-
+from models.Message import Message
+from fastapi.encoders import jsonable_encoder
 app = APIRouter()
 
 html = """
@@ -64,16 +64,16 @@ class ConnectionManager:
 
     def disconnect(self, websocket: WebSocket):
         self.active_connections.remove(websocket)
-
-    async def send_personal_message(self, message: Message, websocket: WebSocket):
-        await websocket.send_json(message)
-
+    
     async def broadcast(self, message: Message):
         for connection in self.active_connections:
-            await connection.send_json(message)
+            await connection.send_json(jsonable_encoder(message))
+
+    async def global_message(self, message: Message, websocket: WebSocket):
+        await websocket.send_json(jsonable_encoder(message))
     
     async def room(self, message: Message, websocket: WebSocket):
-        await websocket.send_json(message)
+        await websocket.send_json(jsonable_encoder(message))
 
     
 manager = ConnectionManager()
@@ -84,21 +84,42 @@ async def get():
     return HTMLResponse(html)
 
 
-@app.websocket("/ws/{client_id}")
-async def websocket_endpoint(
- websocket: WebSocket,
- autenticated_user: Annotated[User, Depends(get_current_user)], 
+@app.websocket("/ws/{username}")
+async def global_messages(
+ websocket: WebSocket, 
  session: Session = Depends(SessionDep),
  ):
     await manager.connect(websocket)
     try: 
         while True:
-            data = await websocket.receive_json()
-            await manager.send_personal_message(f"{data}", websocket)
-            await manager.broadcast(f"Client #{autenticated_user.name} says: {data}")
-            session.add(data)
+            data = await websocket.receive_json() 
+            message_data = Message(**data)
+            await manager.global_message(message_data, websocket)
+            await manager.broadcast(message_data)
+            session.add(message_data)
             session.commit()
-            session.refresh(data)
+            session.refresh(message_data)            
+    except WebSocketDisconnect:
+        manager.disconnect(websocket)
+
+
+
+
+@app.websocket("/ws/{room}")
+async def join_room(
+ websocket: WebSocket, 
+ session: Session = Depends(SessionDep),
+ ):
+    await manager.connect(websocket)
+    try: 
+        while True:
+            data = await websocket.receive_json() 
+            message_data = Message(**data)
+            await manager.room(message_data, websocket)
+            await manager.broadcast(message_data)
+            session.add(message_data)
+            session.commit()
+            session.refresh(message_data)            
     except WebSocketDisconnect:
         manager.disconnect(websocket)
  
