@@ -10,5 +10,5 @@ router = APIRouter()
 class Room(SQLModel, table=True):
     id: int | None = Field(primary_key=True)
     room_name: str
-    users: str
-    sender_message_name: str    
+    users: Optional[str] = None  
+    admin_user: str

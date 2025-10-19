@@ -3,7 +3,8 @@ from typing import Annotated
 from fastapi import Depends, APIRouter
 import os
 from dotenv import load_dotenv
-
+from sqlmodel import Session, create_engine
+from typing import Generator
 
 
 
@@ -15,8 +16,7 @@ DB_URL = os.getenv("DB_URL")
 SECRET_KEY = os.getenv("SECRET_KEY")
 DEBUG = os.getenv("DEBUG") == "True"
 
-from sqlmodel import Session, create_engine
-from typing import Generator
+
 
 DATABASE_URL = DB_URL
 

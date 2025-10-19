@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Acceso no autorizado</title>
+  <style>
+    :root{
+      --bg:#0f1724;
+      --card:#0b1220;
+      --accent:#ff6b6b;
+      --muted:#9aa4b2;
+      --glass: rgba(255,255,255,0.03);
+    }
+    html,body{
+      height:100%;
+      margin:0;
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background: linear-gradient(135deg,#071126 0%, #071733 50%, #08112a 100%);
+      color:#e6eef6;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+    }
+    .wrap{
+      min-height:100%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:32px;
+      box-sizing:border-box;
+    }
+    .card{
+      background: linear-gradient(180deg,var(--card), rgba(11,18,32,0.9));
+      border-radius:12px;
+      padding:36px;
+      width:100%;
+      max-width:720px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.6);
+      display:flex;
+      gap:24px;
+      align-items:center;
+    }
+    .icon {
+      flex:0 0 120px;
+      height:120px;
+      border-radius:50%;
+      background: radial-gradient(circle at 30% 30%, rgba(255,107,107,0.18), transparent 20%), var(--glass);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:48px;
+      color:var(--accent);
+      box-shadow: inset 0 -4px 10px rgba(0,0,0,0.3);
+    }
+    .content{
+      flex:1;
+    }
+    h1{
+      margin:0 0 6px 0;
+      font-size:24px;
+      letter-spacing:0.2px;
+    }
+    p{
+      margin:0 0 18px 0;
+      color:var(--muted);
+      line-height:1.4;
+    }
+    .actions{
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+    .btn{
+      appearance:none;
+      border:0;
+      padding:10px 16px;
+      border-radius:8px;
+      font-weight:600;
+      cursor:pointer;
+      text-decoration:none;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+    }
+    .btn-primary{
+      background: linear-gradient(90deg,var(--accent), #ff8777);
+      color:#10202a;
+      box-shadow: 0 6px 18px rgba(255,107,107,0.12);
+    }
+    .btn-secondary{
+      background:transparent;
+      border:1px solid rgba(255,255,255,0.06);
+      color:var(--muted);
+    }
+    .hint{
+      margin-top:12px;
+      font-size:13px;
+      color:#8896a6;
+    }
+
+    @media (max-width:560px){
+      .card{flex-direction:column; align-items:flex-start;}
+      .icon{width:88px;height:88px;font-size:36px;}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card" role="alert" aria-labelledby="title">
+      <div class="icon" aria-hidden="true">🔒</div>
+      <div class="content">
+        <h1 id="title">Acceso no autorizado</h1>
+        <p>No tienes permiso para ver este recurso. Si crees que esto es un error, inicia sesión con una cuenta que tenga acceso.</p>
+
+        <div class="actions">
+          <!-- Enlace solicitado al login en localhost -->
+          <a class="btn btn-primary" href="http://localhost:8000/static/frontend/auth/login.html">
+            Iniciar sesión
+          </a>
+
+          <!-- Botón secundario para volver al inicio (opcional) -->
+          <a class="btn btn-secondary" href="/" title="Volver al inicio">
+            Volver al inicio
+          </a>
+        </div>
+
+        <div class="hint">Si el enlace no funciona, copia y pega esta URL en tu navegador:
+          <br><code>http://localhost:8000/static/frontend/auth/login.html</code>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

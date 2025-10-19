@@ -7,7 +7,8 @@ from fastapi import APIRouter
 router = APIRouter()
 
 
-class RoomMessage(SQLModel, table=True):
+class Room_Message(SQLModel, table=True):
     id: int | None = Field(primary_key=True)
     asociated_room: str
     sender_message_name: str    
+    content: str

@@ -9,12 +9,12 @@ from services.auth import *
 from fastapi_login.exceptions import InvalidCredentialsException
 import os
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
-
+from services.helpers import save_and_refresh
 app = APIRouter()
 
 SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 10
+ACCESS_TOKEN_EXPIRE_MINUTES = 100
 
 
 oauth_scheme = OAuth2PasswordBearer(tokenUrl="/users/token")
@@ -23,9 +23,7 @@ oauth_scheme = OAuth2PasswordBearer(tokenUrl="/users/token")
 def create_user(user: User, session: Session = Depends(SessionDep)):
     hashed_password = get_password_hash(user.hashed_password)
     user.hashed_password = hashed_password
-    session.add(user)
-    session.commit()
-    session.refresh(user)
+    save_and_refresh(session, user)
     return user
 
 
@@ -44,20 +42,6 @@ async def login_for_access_token(
     access_token = create_access_token(data={"sub": user.name}, expires_delta=access_token_expires)
     token = Token(access_token=access_token, token_type="bearer") 
     return token
-
-
-# @app.post("/login")
-# def login(
-#     form_data: Annotated[OAuth2PasswordRequestForm, Depends()], 
-#     autenticated_user: Annotated[User, Depends(get_current_user)],
-#     db: Annotated[Session, Depends(SessionDep)]):
-#     user = authenticate_user(db, form_data.username, form_data.password)
-#     if not user:
-#      raise InvalidCredentialsException
-#     return autenticated_user
-    # return {"message": "Login exitoso", "info1": user.id ,"info": user.name}
-    # return RedirectResponse(url="/users/home/me")
-    
              
 @app.get("/home/me")
 async def user_me(

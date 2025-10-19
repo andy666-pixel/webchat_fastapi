@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Registro • User</title>
+</head>
+<body>
+  <main class="card" role="main">
+    <header>
+      <div class="logo">U</div>
+      <div>
+        <h1>Crear una room</h1>
+      </div>
+    </header>
+    <div id="Username"></div>
+    <!-- This formulary is going to send data as json -->
+    <form id="registerForm">
+      <div class="field">
+        <label for="name">Name of the room</label>
+        <input id="RoomName" name="RoomName" type="text" placeholder="Type the name of your room" required />
+      </div>
+      <div class="actions">
+        <span class="hint">Los datos se enviarán como <code>application/json</code></span>
+        <button type="submit">Registrar</button>
+      </div>
+    </form>
+  </main>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const accessToken = localStorage.getItem("accesstoken");
+      const userDataStr = localStorage.getItem("userdata");
+      let username = null;
+      const userdata = JSON.parse(userDataStr);
+      username = userdata.name;                               
+      document.getElementById("Username").textContent = username;
+
+      //---------------------------------------------------------------------------------------------------------//
+      document.getElementById('registerForm').addEventListener('submit', async function (event) {
+        event.preventDefault();
+        const data = {
+          room_name: document.getElementById('RoomName').value.trim(),
+          admin_user: document.getElementById("Username").textContent,
+        };
+        const response = await fetch('/chat/create_room', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+        if (response.ok) {
+          alert('Room creada con éxito');
+        } else {
+          const error = await response.text();
+          alert('Error en la creacion: ' + error);
+        }
+      });
+    });
+  </script>
+</body>
+</html>

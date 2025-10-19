@@ -21,7 +21,7 @@
 <!-- //----------------------------------------Script for global chat-----------------------------------------------------------------// -->
 <script>
   //---------------------------------------------------------------------------------------------------------//
-  // Primero recuperamos los datos del usuario de localstorage y su accesstoken
+  // First retrieve the users data from localstorage and its accesstoken
   const accessToken = localStorage.getItem("accesstoken");
   const userDataStr = localStorage.getItem("userdata");
   //---------------------------------------------------------------------------------------------------------//
@@ -29,15 +29,15 @@
   let username = null;
   
   //---------------------------------------------------------------------------------------------------------//
-  // Estos if <if (example) {}> van a ser usados varias veces,
-  // significan que si (example) contiene algun valor/no es null entra en el bloque del if y hace lo que tenga que hacer ahi.
+  // Those if <if (example) {}> its going to be used many times in all the application,
+  // They mean that if (example) contains a value or is not null, execute the if and it does whatever what that code needs to do.
   if (userDataStr) {  
     const userdata = JSON.parse(userDataStr);
     username = userdata.name;                               
     document.getElementById("Username").textContent = username;
     // Si la variable username no es null se inicia la conexion websocket
     if (username) {
-      var ws = new WebSocket(`ws://localhost:8000/ws/${username}`);
+      var ws = new WebSocket(`ws://localhost:8000/chat/ws/${username}`);
       ws.onmessage = function(event) {
         var messages = document.getElementById('messages');
         var message = document.createElement('li'); 

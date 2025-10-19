@@ -1,0 +1,7 @@
+https://github.com/andy666-pixel/webchat_fastapi
+git init
+git remote add origin https://github.com/andy666-pixel/webchat_fastapi.git
+git checkout -b dev
+git add .
+git commit -m "Versión local actualizada"
+git push origin dev --force
