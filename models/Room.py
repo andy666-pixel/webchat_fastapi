@@ -12,3 +12,4 @@ class Room(SQLModel, table=True):
     room_name: str
     users: Optional[str] = None  
     admin_user: str
+    messages: str

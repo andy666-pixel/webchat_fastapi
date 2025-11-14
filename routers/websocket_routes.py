@@ -44,31 +44,28 @@ class ConnectionManager:
     
 manager = ConnectionManager()
 
-@chat.websocket("/ws/{username}")
+@chat.websocket("/sendmessage/{username}")
 async def global_messages(
  websocket: WebSocket,
  username: str,
  session: Session = Depends(SessionDep),
  ):
     await manager.connect(websocket)
-    print(f"Nuevo cliente con username: {username}")
     try: 
         while True:
             data = await websocket.receive_json() 
             message_data = Message(**data)
             await manager.global_message(message_data, websocket)
             await manager.broadcast(message_data)
-            print("ya")
             save_and_refresh(session, message_data)
     except WebSocketDisconnect:
         manager.disconnect(websocket)
 
-@chat.websocket("/chat/ws/room/{room}")
+@chat.websocket("/sendmessage/room/{room}")
 async def join_room(
  websocket: WebSocket, 
  session: Session = Depends(SessionDep),
  ):
-    await websocket.accept()
     await manager.connect(websocket)
     try: 
         while True:
